@@ -1,0 +1,6 @@
+cloudinary==1.34.0
+faiss-cpu
+numpy
+PyMuPDF
+sentence-transformers
+google-generativeai
