@@ -75,7 +75,7 @@ const SideMenu = ({ visible, onClose, topOffset = 70 }) => {
           <Text style={styles.menuText}>Resources</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => router.push("/about")}>
           <Ionicons
             name="information-circle-outline"
             size={20}
