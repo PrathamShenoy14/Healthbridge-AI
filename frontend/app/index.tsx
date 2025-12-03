@@ -121,7 +121,7 @@ const AuthScreen = () => {
         if (response.data.role === "patient") {
           router.replace("./patients");
         } else {
-          router.replace("./doctor");
+          router.replace("./doctors");
         }
       }
     } catch (error) {

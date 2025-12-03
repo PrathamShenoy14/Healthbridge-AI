@@ -1,5 +1,5 @@
 from utils.security import hash_password, verify_password, create_access_token
-from core.db import patients_collection, doctors_collection
+from core.db import patients_collection, doctors_collection, personal_info_collection
 
 async def signup_user(email: str, password: str, confirm_password: str, role: str):
     """
@@ -17,6 +17,18 @@ async def signup_user(email: str, password: str, confirm_password: str, role: st
 
     hashed = hash_password(password)
     await collection.insert_one({"email": email, "hashed_password": hashed})
+    if role == "patient":
+        await personal_info_collection.insert_one({
+            "patient_email": email,
+            "age": "NA",
+            "gender": "NA",
+            "address": "NA",
+            "contact": "NA",
+            "conditions": "NA",
+            "surgeries": "NA",
+            "allergies": "NA",
+            "medications": None
+        })
 
     token = create_access_token({"sub": email, "role": role})
     return {"access_token": token, "token_type": "bearer","email":email, "role":role}

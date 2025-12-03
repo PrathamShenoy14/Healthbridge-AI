@@ -8,12 +8,12 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
-  Linking,
   ActivityIndicator,
 } from 'react-native';
 import { ArrowLeft, FileText, Search, Eye } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
+import * as WebBrowser from 'expo-web-browser';
 import { API_BASE_URL } from '@/config';
 
 const ResourceScreen = () => {
@@ -23,12 +23,11 @@ const ResourceScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Fetch resources from API
   const fetchResources = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/file/`);
-      setResources(response.data); // full list
-      setFilteredResources(response.data); // initially same
+      setResources(response.data);
+      setFilteredResources(response.data);
     } catch (error) {
       console.error('Error fetching resources:', error);
     } finally {
@@ -40,7 +39,6 @@ const ResourceScreen = () => {
     fetchResources();
   }, []);
 
-  // Filter resources by title whenever searchQuery changes
   useEffect(() => {
     if (searchQuery.trim() === '') {
       setFilteredResources(resources);
@@ -55,7 +53,11 @@ const ResourceScreen = () => {
   const handleBackPress = () => router.back();
 
   const handleOpenPdf = async (pdfUrl: string) => {
-    Linking.openURL(pdfUrl);
+    try {
+      await WebBrowser.openBrowserAsync(pdfUrl);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const ResourceCard = ({ resource }) => (
@@ -91,28 +93,18 @@ const ResourceScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      {/* Header */}
+
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleBackPress}
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.backButton} onPress={handleBackPress} activeOpacity={0.7}>
           <ArrowLeft size={24} color="#374151" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Resources</Text>
         <View style={styles.placeholder} />
       </View>
 
-      {/* Content */}
-      <ScrollView
-        style={styles.content}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.mainTitle}>HealthBridge AI Sources</Text>
 
-        {/* Search Bar */}
         <View style={styles.searchContainer}>
           <Search size={20} color="#9CA3AF" style={styles.searchIcon} />
           <TextInput
@@ -124,21 +116,13 @@ const ResourceScreen = () => {
           />
         </View>
 
-        {/* Resource Cards */}
         <View style={styles.resourceList}>
           {filteredResources.length > 0 ? (
             filteredResources.map((resource) => (
               <ResourceCard key={resource.id} resource={resource} />
             ))
           ) : (
-            <Text
-              style={{
-                textAlign: 'center',
-                color: '#6B7280',
-                marginTop: 20,
-                fontSize: 16,
-              }}
-            >
+            <Text style={{ textAlign: 'center', color: '#6B7280', marginTop: 20, fontSize: 16 }}>
               No resources found.
             </Text>
           )}
@@ -160,10 +144,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
   },
   backButton: { padding: 8, borderRadius: 8 },
   headerTitle: { fontSize: 18, fontWeight: '600', color: '#111827' },
@@ -192,10 +172,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 16,
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
   },
   resourceContent: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   iconContainer: { alignItems: 'center', marginRight: 16 },
@@ -204,7 +180,6 @@ const styles = StyleSheet.create({
   textContainer: { flex: 1 },
   resourceTitle: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 4 },
   resourceDescription: { fontSize: 14, color: '#6B7280', lineHeight: 20 },
-  viewButton: { padding: 8, borderRadius: 8 },
 });
 
 export default ResourceScreen;

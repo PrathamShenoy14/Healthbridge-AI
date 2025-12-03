@@ -48,6 +48,19 @@ const SideMenu = ({ visible, onClose, topOffset = 70 }) => {
     }
   }, [visible]);
 
+  const handleLogout = async () => {
+  try {
+    await SecureStore.deleteItemAsync("token");
+    await SecureStore.deleteItemAsync("role");
+    await SecureStore.deleteItemAsync("email");
+    // navigate to login if needed
+    // navigation.replace("Login");
+    router.replace("/")
+  } catch (error) {
+    console.log("Logout error:", error);
+  }
+};
+
   return (
     <>
       {/* Overlay */}
@@ -84,7 +97,7 @@ const SideMenu = ({ visible, onClose, topOffset = 70 }) => {
           <Text style={styles.menuText}>About Us</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
           <MaterialIcons name="logout" size={20} color="#111827" />
           <Text style={styles.menuText}>Logout</Text>
         </TouchableOpacity>
