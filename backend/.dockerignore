@@ -1,0 +1,27 @@
+# Local Python environment
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Secrets and environment configuration
+.env
+.env.*
+!.env.example
+
+# Git and development files
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Temporary files
+*.log
+.pytest_cache/
+requirements-local.txt
+test_db.py
+
+# Operating system files
+.DS_Store
+Thumbs.db
